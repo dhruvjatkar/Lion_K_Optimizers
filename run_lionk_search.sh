@@ -102,7 +102,7 @@ echo ""
 # The search:
 #   1. Generates 80 candidates via 5D Sobol over (delta, delta_final, schedule, ns_steps, alpha)
 #   2. Always starts with Muon baseline as candidate #0
-#   3. F0 prunes candidates with >10% kernel overhead vs Muon
+#   3. F0 measures kernel overhead (safety gate at 5000%; real filtering is by F1 wall-clock)
 #   4. F1 screens with 2 seeds on 94% target
 #   5. F2 validates top-20 with 3 seeds
 #   6. F3 evaluates top-6 with 5 seeds + transfer to 95%/96%
@@ -128,7 +128,7 @@ $PYTHON research/run_muonk_search.py \
     --script95 "research/airbench95_muonk_transfer.py" \
     --script96 "research/airbench96_muonk_transfer.py" \
     --target-acc 0.94 \
-    --max-overhead-pct 10.0 \
+    --max-overhead-pct 5000.0 \
     --delta-min 0.001 \
     --delta-max 0.8 \
     --alpha-min 0.1 \

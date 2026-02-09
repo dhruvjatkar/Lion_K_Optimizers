@@ -549,9 +549,13 @@ if __name__ == "__main__":
                                aug=dict(flip=True, translate=2))
 
     # Warmup run: compiles model + kernels, NOT timed in results
+    # main("warmup",...) replaces train_loader.labels with random labels
+    # to avoid leaking real labels into compilation traces.  Save + restore.
+    real_labels = train_loader.labels.clone()
     if not args.quiet:
         print("Warmup (compiling model + kernels)...")
     main("warmup", model, args, train_loader, test_loader)
+    train_loader.labels = real_labels  # restore real labels for timed runs
     if not args.quiet:
         print("Warmup complete. Starting timed runs.\n")
 
