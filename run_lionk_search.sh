@@ -2,17 +2,16 @@
 #SBATCH --job-name=lionk-search
 #SBATCH --partition=gpu-short
 #SBATCH --gres=gpu:a100:1
-#SBATCH --cpus-per-task=16
-#SBATCH --mem=128G
+#SBATCH --cpus-per-task=56
+#SBATCH --mem=480G
 #SBATCH --time=02:00:00
 #SBATCH --nodelist=d1026
 
 # =============================================================================
 # Lion-K Spectral Search on A100-SXM4-40GB (d1026)
 #
-# GPU-exclusive: 1 A100-40GB reserved. Compiled training script with CUDA event
-# timing is GPU-bound -- CPU/memory contention is irrelevant to measured time.
-# Raised time limit to 4h for model.compile warmup overhead per evaluation.
+# Near-exclusive allocation: 56/64 CPUs, 480/500G mem.
+# --exclusive is blocked by QOSMaxGRESPerJob (node has 3 GPUs, QOS caps at 1).
 #
 # The search explores convex spectral K-functions parameterised by:
 #   (delta, delta_final, schedule, ns_steps, alpha)
@@ -100,11 +99,11 @@ print(f'Sample config: {cfg}')
 echo ""
 
 # ---------- Run the search ----------
-# The search (using fully-compiled training script for real wall-clock times):
+# The search:
 #   1. Generates 80 candidates via 5D Sobol over (delta, delta_final, schedule, ns_steps, alpha)
 #   2. Always starts with Muon baseline as candidate #0
-#   3. F0 prunes only extremely slow candidates (>500% kernel overhead vs Muon)
-#   4. F1 screens with 2 seeds on 94% target (compiled model, real wall-clock)
+#   3. F0 prunes candidates with >10% kernel overhead vs Muon
+#   4. F1 screens with 2 seeds on 94% target
 #   5. F2 validates top-20 with 3 seeds
 #   6. F3 evaluates top-6 with 5 seeds + transfer to 95%/96%
 
@@ -112,9 +111,9 @@ STUDY_ID="lionk_d1026_${TIMESTAMP}"
 
 echo "============================================================"
 echo "Starting Lion-K search: ${STUDY_ID}"
-echo "  F1 budget:   40 candidates"
-echo "  F2 budget:   12 promoted"
-echo "  F3 budget:   5 finalists"
+echo "  F1 budget:   80 candidates"
+echo "  F2 budget:   20 promoted"
+echo "  F3 budget:   6 finalists"
 echo "  Seeds:       F1=2, F2=3, F3=5"
 echo "  Delta range: [0.001, 0.8]"
 echo "  Alpha range: [0.1, 1.0]"
@@ -129,16 +128,16 @@ $PYTHON research/run_muonk_search.py \
     --script95 "research/airbench95_muonk_transfer.py" \
     --script96 "research/airbench96_muonk_transfer.py" \
     --target-acc 0.94 \
-    --max-overhead-pct 500.0 \
+    --max-overhead-pct 10.0 \
     --delta-min 0.001 \
     --delta-max 0.8 \
     --alpha-min 0.1 \
     --alpha-max 1.0 \
     --ns-step-min 2 \
     --ns-step-max 4 \
-    --f1-budget 40 \
-    --f2-budget 12 \
-    --f3-budget 5 \
+    --f1-budget 80 \
+    --f2-budget 20 \
+    --f3-budget 6 \
     --seeds-f1 2 \
     --seeds-f2 3 \
     --seeds-f3 5 \
