@@ -529,8 +529,8 @@ def _build_arg_parser():
     p.add_argument("--k-alpha", type=float, default=0.5)
     p.add_argument("--json-output", type=str, default="")
     p.add_argument("--quiet", action="store_true")
-    p.add_argument("--compile-mode", type=str, default="reduce-overhead",
-                   help="torch.compile mode (reduce-overhead, max-autotune, default)")
+    p.add_argument("--compile-mode", type=str, default="default",
+                   help="torch.compile mode (default, reduce-overhead, max-autotune)")
     return p
 
 

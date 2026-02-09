@@ -4,7 +4,7 @@
 #SBATCH --gres=gpu:a100:1
 #SBATCH --cpus-per-task=16
 #SBATCH --mem=128G
-#SBATCH --time=04:00:00
+#SBATCH --time=02:00:00
 #SBATCH --nodelist=d1026
 
 # =============================================================================
@@ -112,9 +112,9 @@ STUDY_ID="lionk_d1026_${TIMESTAMP}"
 
 echo "============================================================"
 echo "Starting Lion-K search: ${STUDY_ID}"
-echo "  F1 budget:   80 candidates"
-echo "  F2 budget:   20 promoted"
-echo "  F3 budget:   6 finalists"
+echo "  F1 budget:   40 candidates"
+echo "  F2 budget:   12 promoted"
+echo "  F3 budget:   5 finalists"
 echo "  Seeds:       F1=2, F2=3, F3=5"
 echo "  Delta range: [0.001, 0.8]"
 echo "  Alpha range: [0.1, 1.0]"
@@ -136,9 +136,9 @@ $PYTHON research/run_muonk_search.py \
     --alpha-max 1.0 \
     --ns-step-min 2 \
     --ns-step-max 4 \
-    --f1-budget 80 \
-    --f2-budget 20 \
-    --f3-budget 6 \
+    --f1-budget 40 \
+    --f2-budget 12 \
+    --f3-budget 5 \
     --seeds-f1 2 \
     --seeds-f2 3 \
     --seeds-f3 5 \
