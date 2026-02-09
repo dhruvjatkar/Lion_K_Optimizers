@@ -2,16 +2,17 @@
 #SBATCH --job-name=lionk-search
 #SBATCH --partition=gpu-short
 #SBATCH --gres=gpu:a100:1
-#SBATCH --cpus-per-task=56
-#SBATCH --mem=480G
-#SBATCH --time=02:00:00
+#SBATCH --cpus-per-task=16
+#SBATCH --mem=128G
+#SBATCH --time=04:00:00
 #SBATCH --nodelist=d1026
 
 # =============================================================================
 # Lion-K Spectral Search on A100-SXM4-40GB (d1026)
 #
-# Near-exclusive allocation: 56/64 CPUs, 480/500G mem.
-# --exclusive is blocked by QOSMaxGRESPerJob (node has 3 GPUs, QOS caps at 1).
+# GPU-exclusive: 1 A100-40GB reserved. Compiled training script with CUDA event
+# timing is GPU-bound -- CPU/memory contention is irrelevant to measured time.
+# Raised time limit to 4h for model.compile warmup overhead per evaluation.
 #
 # The search explores convex spectral K-functions parameterised by:
 #   (delta, delta_final, schedule, ns_steps, alpha)
