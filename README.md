@@ -114,3 +114,25 @@ This project builds on the excellent previous record https://github.com/tysam-co
 
 Which itself builds on the amazing series https://myrtle.ai/learn/how-to-train-your-resnet/ (26 V100-seconds to 94%, which is >=8 A100-seconds)
 
+## Research: Lion-K spectral search
+
+The repository includes a research stack for searching over convex spectral
+K-functions in the Lion-K optimizer family
+([UT Austin page](https://www.cs.utexas.edu/~lqiang/lionk/html/intro.html)).
+
+Muon is the special case K(X) = nuclear norm, with nabla K = polar factor.
+The search explores richer spectral maps h(sigma) = g'(sigma) that control
+how aggressively singular values are equalized, including:
+
+- **Soft-Huber** (family A): h(s) = s / sqrt(s^2 + d^2), smooth min(1, s/d).
+- **Power-compressed** (family B): h(s) = s^a / (s^{2a} + d^{2a})^{1/2},
+  smooth min(1, (s/d)^a).  Generalises Muon (a->0) and soft-Huber (a=1).
+
+Layout:
+
+- `research/lionk/` -- optimizer, kernels, metrics, search, and trial IO.
+- `research/run_muonk_search.py` -- multi-fidelity search entrypoint.
+- `research/lionk/trials/` -- deterministic storage layout for studies.
+
+The 94/95/96 research runner scripts accept `--matrix-opt {muon,soft_huber_k,power_k}`
+and `--k-*` flags for spectral kernel configuration.
