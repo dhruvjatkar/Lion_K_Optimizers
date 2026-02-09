@@ -76,6 +76,7 @@ if torch.cuda.is_available():
 echo ""
 
 cd "$REPO_DIR"
+export PYTHONPATH="$REPO_DIR:${PYTHONPATH:-}"
 
 # ---------- Ensure CIFAR-10 is cached ----------
 echo "Ensuring CIFAR-10 data is cached..."
