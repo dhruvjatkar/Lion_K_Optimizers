@@ -99,11 +99,11 @@ print(f'Sample config: {cfg}')
 echo ""
 
 # ---------- Run the search ----------
-# The search:
+# The search (using fully-compiled training script for real wall-clock times):
 #   1. Generates 80 candidates via 5D Sobol over (delta, delta_final, schedule, ns_steps, alpha)
 #   2. Always starts with Muon baseline as candidate #0
-#   3. F0 prunes candidates with >10% kernel overhead vs Muon
-#   4. F1 screens with 2 seeds on 94% target
+#   3. F0 prunes only extremely slow candidates (>500% kernel overhead vs Muon)
+#   4. F1 screens with 2 seeds on 94% target (compiled model, real wall-clock)
 #   5. F2 validates top-20 with 3 seeds
 #   6. F3 evaluates top-6 with 5 seeds + transfer to 95%/96%
 
@@ -124,11 +124,11 @@ echo ""
 $PYTHON research/run_muonk_search.py \
     --study-id "$STUDY_ID" \
     --trials-root "research/lionk/trials" \
-    --script94 "research/airbench94_muon_simple.py" \
+    --script94 "research/airbench94_compiled.py" \
     --script95 "research/airbench95_muonk_transfer.py" \
     --script96 "research/airbench96_muonk_transfer.py" \
     --target-acc 0.94 \
-    --max-overhead-pct 10.0 \
+    --max-overhead-pct 500.0 \
     --delta-min 0.001 \
     --delta-max 0.8 \
     --alpha-min 0.1 \
